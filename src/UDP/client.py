@@ -1,19 +1,24 @@
 import socket
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+ADDRESS = socket.gethostname()  # Endereço
+PORT = 1234  # Porta
+BUFFER = 4096  # tamanho do buffer
 
-end = False
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Cria socket UDP cliente (SOCK_DGRAM)
+end = False  # Controle do main loop
 
-while not end:
-    fac = input("Define factorial:")
-    s.sendto(bytes(fac, "utf-8"),(socket.gethostname(), 1234))
+while not end:  # Cliente: main loop
+    fac = input("Define factorial:")  # Usuário define fatorial a ser calculado
+    s.sendto(fac.encode(), (ADDRESS, PORT))  # Cliente envia mensagem codificada para o servidor UDP
 
-    msg, serversocket = s.recvfrom(1234)
-    print(msg.decode("utf-8"))
+    msg, serversocket = s.recvfrom(BUFFER)  # CLiente recebe mensagem e socket do servidor, guarda em variáveis
+    print(msg.decode("utf-8"))  # Decodifica e imprime mensagem
 
-    opt = input("Another factorial? (Y/n)")
+    opt = input("Another factorial? (Y/n)").lower()  # Outro fatorial?
 
-    if opt.lower() == "y" or opt == "":
+    if opt == "y" or opt == "":  # Se sim, programa segue normalmente...
         pass
-    else:
+    else:  # Se não, quebra o main loop
         end = True
+
+s.close()  # Fecha o socket cliente
